@@ -1,25 +1,55 @@
 import numpy as np
 
 class ParticleFilter():
-    def __init__(self, sensor_model, action_model, x_init = None, num_particles=5):
+    def __init__(self, sensor_model_fun, action_model_fun, x_init, estimate_fun = None, num_particles=5):
         self.num_particles = num_particles
-        self.sensor_model = sensor_model
-        self.action_model = action_model
-        self.states = [x_init] * num_particles
+        self.sensor_model = sensor_model_fun
+        self.action_model = action_model_fun
+        if estimate_fun == None:
+            estimate_fun = lambda x: np.sum(x) / len(x)
+        self.estimation = estimate_fun
+        self.current_estimate = None
+
+        # assign initial particles
+        if len(x_init) == 1:
+            self.states = np.ones(num_particles) * x_init
+        elif len(x_init) == num_particles:
+            self.states = np.array(x_init)
+        else:
+            raise ValueError()
+
         self.weights = [1 / num_particles] * num_particles
-        self.estimate = x_init
 
     def update(self, observation, action = None):
         if action != None:
            self.resample()
         self.action(action)
         self.sensor(observation)
-        self.estimate_state()
+        return self.estimate_state()
 
 
     def resample(self):
-        for i in range(self.num_particles):
-            ...
+        new_particles = []
+        # generate cumulative sum of weights
+        cum_sum = np.cumsum(self.weights)
+        total = cum_sum[-1]
+
+        # ensure weights sm to 1.0
+        if total != 1.0:
+            cum_sum /= total
+
+        # random offset
+        r = np.random.uniform(0, 1/self.num_particles)
+
+        i = 0
+        for m in range(self.num_particles):
+            u = r + m / self.num_particles
+            while u > cum_sum[i]:
+                i += 1
+            new_particles.append(self.states[i])
+        self.states = new_particles
+        return new_particles
+
 
 
     def action(self, action):
@@ -45,15 +75,40 @@ class ParticleFilter():
             self.weights[i] /= total_weight
 
     def estimate_state(self):
-        ...
+        self.current_estimate = self.estimation(self.states)
+        return self.current_estimate
 
     # return the esimated state
     def get_state(self):
-        return self.estimate
+        if self.current_estimate == None:
+            self.estimate_state()
+        return self.current_estimate
+
+    def get_particles(self):
+        return self.states
+
+    def set_particles(self, particles, weights = None):
+        # validate inputs
+        if len(particles) != self.num_particles:
+            raise ValueError("len(particles) must be equal to set number of particles = "+str(self.num_particles) + ". len(particles) = " + str(len(particles)))
+        if weights != None and len(weights) != self.num_particles:
+            raise ValueError("len(weights) must be equal to set number of particles = "+str(self.num_particles) + ". len(weights) = " + str(len(weights)))
+
+        self.states = particles
+        if weights != None:
+            self.weights = weights
+        else:
+            self.weights = [1/ len(particles)] * len(particles)
 
 
+"""
+from util import Vector3
 
-p = ParticleFilter(1,2,(3,4))
-
-
-
+p = ParticleFilter(1,2,[Vector3(1,1,1),Vector3(4,3,1),Vector3(0,0,1),Vector3(1,2,1),Vector3(9,4,5) ],None, 5)
+print("particles:")
+print(p.get_particles())
+print("resampling:")
+p.resample()
+print(p.get_particles())
+print("state estimate = ", p.get_state())
+"""

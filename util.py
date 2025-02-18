@@ -30,6 +30,10 @@ class Vector3:
         """Multiply a vector by a const"""
         return Vector3(self.x * other, self.y * other, self.z * other)
 
+    def __truediv__(self, other: float) -> 'Vector3':
+        """Divide a vector by a const"""
+        return Vector3(self.x / other, self.y / other, self.z / other)
+
     def mag(self) -> float:
         """Return the magnitude (length) of a vector."""
         return math.sqrt(self.x * self.x + self.y * self.y + self.z * self.z)
