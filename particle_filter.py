@@ -6,18 +6,12 @@ class ParticleFilter():
         self.sensor_model = sensor_model_fun
         self.action_model = action_model_fun
         if estimate_fun == None:
-            estimate_fun = lambda x: np.sum(x) / len(x)
+            estimate_fun = lambda x: np.sum(x,0) / len(x)
         self.estimation = estimate_fun
         self.current_estimate = None
 
         # assign initial particles
-        if len(x_init) == 1:
-            self.states = np.ones(num_particles) * x_init
-        elif len(x_init) == num_particles:
-            self.states = np.array(x_init)
-        else:
-            raise ValueError()
-
+        self.states = np.array([x_init] * num_particles)
         self.weights = [1 / num_particles] * num_particles
 
     def update(self, observation, action = None):
@@ -29,6 +23,7 @@ class ParticleFilter():
 
 
     def resample(self):
+        """ Resamples the particles based on their weights. """
         new_particles = []
         # generate cumulative sum of weights
         cum_sum = np.cumsum(self.weights)
@@ -51,13 +46,13 @@ class ParticleFilter():
         return new_particles
 
 
-
     def action(self, action):
         """ Applies the action model to each particle in the filter. """
         for i in range(self.num_particles):
             particle = self.states[i]
             particle = self.action_model(particle, action)
             self.states[i] = particle
+
 
     def sensor(self, observation):
         """ Updates the particle weights based on sensor measurements. """
@@ -75,6 +70,7 @@ class ParticleFilter():
             self.weights[i] /= total_weight
 
     def estimate_state(self):
+        """ Returns the estimated state of the system. """
         self.current_estimate = self.estimation(self.states)
         return self.current_estimate
 
@@ -99,16 +95,3 @@ class ParticleFilter():
             self.weights = weights
         else:
             self.weights = [1/ len(particles)] * len(particles)
-
-
-"""
-from util import Vector3
-
-p = ParticleFilter(1,2,[Vector3(1,1,1),Vector3(4,3,1),Vector3(0,0,1),Vector3(1,2,1),Vector3(9,4,5) ],None, 5)
-print("particles:")
-print(p.get_particles())
-print("resampling:")
-p.resample()
-print(p.get_particles())
-print("state estimate = ", p.get_state())
-"""
