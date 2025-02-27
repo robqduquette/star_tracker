@@ -29,8 +29,8 @@ def xy(lnglat, truncate=False):
 
     lng, lat = lnglat[:,0], lnglat[:, 1]
     if truncate:
-        lng = numpy.clip(lng, -180.0, 180.0)
-        lat = numpy.clip(lng, -90.0, 90.0)
+        lng = np.clip(lng, -180.0, 180.0)
+        lat = np.clip(lng, -90.0, 90.0)
     x = 6378137.0 * np.radians(lng)
     y = 6378137.0 * np.log(
         np.tan((math.pi * 0.25) + (0.5 * np.radians(lat))))

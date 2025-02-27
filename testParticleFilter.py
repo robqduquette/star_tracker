@@ -56,7 +56,7 @@ for step in range(len(u)-1):
     # extract the state estimate from the particle filters
     for i in range(len(pfs)):
         pf = pfs[i]
-        x_hat[i, :, step] = pf.estimate_state()
+        x_hat[i, :, step] = pf.calc_estimate_state()
 
     t = step * dt
 
@@ -76,7 +76,7 @@ for step in range(len(u)-1):
 # final filter estimate
 for i in range(len(pfs)):
     pf = pfs[i]
-    x_hat[i, :, -1] = pf.estimate_state()
+    x_hat[i, :, -1] = pf.calc_estimate_state()
 
 # plot
 fig, ax = plt.subplots()

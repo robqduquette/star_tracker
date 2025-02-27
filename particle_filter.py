@@ -43,7 +43,7 @@ class ParticleFilter():
            self.resample()
         self.action(action)
         self.sensor(observation)
-        return self.estimate_state()
+        return self.calc_estimate_state()
 
 
     def resample(self):
@@ -119,7 +119,7 @@ class ParticleFilter():
         for i in range(self.num_particles):
             self.weights[i] /= total_weight
 
-    def estimate_state(self):
+    def calc_estimate_state(self):
         """
         Calculates the estimated state of the system.
 
@@ -132,7 +132,7 @@ class ParticleFilter():
         self.current_estimate = self.estimation(self.states)
         return self.current_estimate
 
-    # return the esimated state
+    # return the estimated state
     def get_state(self):
         """
         Gets the currently estimated state from the filter. Generates the estimate if does not yet exzist
@@ -144,7 +144,7 @@ class ParticleFilter():
             the current state estimate
         """
         if self.current_estimate == None:
-            self.estimate_state()
+            self.calc_estimate_state()
         return self.current_estimate
 
     def get_particles(self):
