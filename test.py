@@ -20,7 +20,7 @@ sensor.gen_measurements(starmap, Vector3(0,-1.5,0), 1).save("output.png")
 frames = []
 n = 1
 for i in range(360//n):
-    frames.append(sensor.gen_measurements(starmap, Vector3(0,i * n,0) * 3.1415 / 180, 1))
+    frames.append(sensor.gen_measurements(starmap, Vector3(0,i * n,i*n) * 3.1415 / 180, 0))
 
 frames[0].save("gif.gif", save_all = True, append_images= frames[1:], dration=5, loop = 0)
 """"""
