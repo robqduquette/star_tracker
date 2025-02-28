@@ -2,6 +2,7 @@ import collections
 import enum
 import math
 from random import random
+import numpy as np
 
 
 class Vector3:
@@ -66,6 +67,13 @@ class Vector3:
         r = m.dot(n)
 
         return math.degrees(math.acos(r))
+
+    def asnp(self):
+        """
+        Return the vector as a numpy array.
+        """
+        return np.array([self.x, self.y, self.z])
+
 
 def import_starmap(file:str)->list:
     """ Imports a starmap text file into a List(Tuple(Direction, Brightness)) """

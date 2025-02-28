@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 from util import Vector3, import_starmap
-import WebMercator
 
 args = sys.argv
 if len(args) < 2:
