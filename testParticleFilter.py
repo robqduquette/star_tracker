@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # basic pendulum example system
 gl = 9.81 / 9.87 # g/l
 gl_est = 9.81 / 10
-damping = 0.2
+damping = 0.1
 
 def pendulum_action(x, u, dt):
     """action model for pendulum particle filter"""
@@ -30,7 +30,7 @@ def pendulum_model(x,u):
     return dx
 
 # noise & disturbance parameters
-p_disturbance = 0.2 # disturbances 20% of the time
+p_disturbance = 1.0 # disturbances 20% of the time
 mag_dist = 5 # max magnitude of disturbances
 sensor_noise = 0.05  # 5% error in readings
 actuator_noise = 0.1 # 10% error in actuator output
@@ -62,7 +62,7 @@ for step in range(len(u)-1):
 
     # generate a random disturbance to the pendulum sometimes
     dist = 0
-    if np.random.random() > p_disturbance:
+    if np.random.random() < p_disturbance:
         dist = (np.random.random() - 0.5) * mag_dist
 
     # update the pendulum's state

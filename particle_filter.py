@@ -20,7 +20,8 @@ class ParticleFilter():
         self.sensor_model = sensor_model_fun
         self.action_model = action_model_fun
         if estimate_fun == None:
-            estimate_fun = lambda x: np.sum(x,0) / len(x)
+            # weighted sum of states
+            estimate_fun = lambda x: np.sum(np.array([self.weights]*len(x[0])).T * x,0)
         self.estimation = estimate_fun
         self.current_estimate = None
 
@@ -72,7 +73,7 @@ class ParticleFilter():
         i = 0
         for m in range(self.num_particles):
             u = r + m / self.num_particles
-            while u > cum_sum[i]:
+            while u > cum_sum[i] and i < self.num_particles-1:
                 i += 1
             new_particles.append(self.states[i])
         self.states = new_particles
